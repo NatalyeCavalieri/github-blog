@@ -4,6 +4,7 @@ import { Profile } from "./components/Profile";
 import { SearchInput } from "./components/SearchInput";
 import { PostListContainer } from "./styles";
 import { api } from "../../lib/axios";
+import { Spinner } from "../../components/spinner";
 
 
 const username = import.meta.env.VITE_GITHUB_USERNAME;
@@ -29,10 +30,9 @@ export function Blog() {
     try{
       setIsLoading(true)
       const response = await api.get(`/search/issues?q=${query}%20repo:${username}/${repoName}`)
-      console.log(response.data)
       setPosts(response.data.items)
     }finally{
-      setIsLoading(false)
+     setIsLoading(false)
     }
   },[posts])
 
@@ -42,12 +42,12 @@ export function Blog() {
   return (
     <>
       <Profile />
-      <SearchInput />
-      <PostListContainer>
+      <SearchInput postsLength={posts.length} getPosts={getPosts} />
+      {isLoading ? <Spinner/> : <><PostListContainer>
         {posts.map((post)=> (
         <Post key={post.number} post={post} />
         ))}
-      </PostListContainer>
+      </PostListContainer></>}
     </>
   );
 }
